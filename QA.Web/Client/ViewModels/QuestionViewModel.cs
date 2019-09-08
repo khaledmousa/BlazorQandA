@@ -20,7 +20,7 @@ namespace QA.Web.Client.ViewModels
             _httpClient = httpClient;
             _navigationManager = navigationManager;
             Question = question;
-            Answers = Question.Answers.Select(a => new AnswerViewModel(httpClient, navigationManager, a)).ToList();
+            Answers = Question.Answers.Select(a => new AnswerViewModel(httpClient, navigationManager, Question.Id, a)).ToList();
         }
 
         public Guid Id => Question.Id;

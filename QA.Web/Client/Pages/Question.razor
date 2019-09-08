@@ -41,6 +41,11 @@ else
             <li class="list-group-item">
                 <div class="card">
                     <div class="card-body">
+                        <h5>
+                            <button @onclick="a.VoteUp" class="btn"><i class="oi oi-plus"></i></button>
+                            @a.Votes.Sum(v => v.Direction == Direction.Down ? -1 : 1)
+                            <button @onclick="a.VoteDown" class="btn"><i class="oi oi-minus"></i></button>
+                        </h5>
                         <p class="card-text"><Markdown Value="@a.Text" /></p>
                     </div>
                     <ul class="list-group list-group-flush">

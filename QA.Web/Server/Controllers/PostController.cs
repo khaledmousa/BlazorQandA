@@ -52,6 +52,18 @@ namespace QA.Web.Server.Controllers
         }
 
         [HttpPost]
+        [Route("{questionId}/{answerId}/vote")]
+        public Answer VoteAnswer(string questionId, string answerId, [FromBody] bool up)
+        {
+            //TODO: fix after authentication
+            var user = new User { Id = Guid.NewGuid(), Username = ".." };
+
+            var result = _postCommandService.Execute(new VoteAnswerCommand(user, Guid.Parse(answerId), up ? Direction.Up : Direction.Down));
+            if (result.IsSuccessful) return result.Entity as Answer;
+            else return null;
+        }
+
+        [HttpPost]
         [Route("{questionId}/answer")]
         public Answer AddAnswer(string questionId, [FromBody]string answer)
         {
