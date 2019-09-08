@@ -16,7 +16,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\QA.Domain\QA.Domain.csproj" />
-    <ProjectReference Include="..\Shared\QA.Web.Shared.csproj" />
   </ItemGroup>
 
 </Project>

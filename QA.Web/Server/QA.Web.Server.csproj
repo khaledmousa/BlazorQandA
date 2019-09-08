@@ -14,7 +14,6 @@
     <ProjectReference Include="..\..\QA.DemoServices\QA.DemoServices.csproj" />
     <ProjectReference Include="..\..\QA.Domain\QA.Domain.csproj" />
     <ProjectReference Include="..\Client\QA.Web.Client.csproj" />
-    <ProjectReference Include="..\Shared\QA.Web.Shared.csproj" />
   </ItemGroup>
 
 </Project>

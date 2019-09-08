@@ -9,11 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QA.Services", "QA.Services\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QA.DemoServices", "QA.DemoServices\QA.DemoServices.csproj", "{8903170C-C5D4-4365-95CF-B1A8B82812F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Web.Server", "QA.Web\Server\QA.Web.Server.csproj", "{46017AF3-08FD-43A2-80D9-E6B77FA13E24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QA.Web.Server", "QA.Web\Server\QA.Web.Server.csproj", "{46017AF3-08FD-43A2-80D9-E6B77FA13E24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Web.Client", "QA.Web\Client\QA.Web.Client.csproj", "{E8D98C23-CB05-4120-AFE0-7E0BCAB12EEA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Web.Shared", "QA.Web\Shared\QA.Web.Shared.csproj", "{4BFDEDC1-52A0-4BC5-8BAB-75B4E4D86A4A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QA.Web.Client", "QA.Web\Client\QA.Web.Client.csproj", "{E8D98C23-CB05-4120-AFE0-7E0BCAB12EEA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +39,6 @@ Global
 		{E8D98C23-CB05-4120-AFE0-7E0BCAB12EEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8D98C23-CB05-4120-AFE0-7E0BCAB12EEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E8D98C23-CB05-4120-AFE0-7E0BCAB12EEA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4BFDEDC1-52A0-4BC5-8BAB-75B4E4D86A4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4BFDEDC1-52A0-4BC5-8BAB-75B4E4D86A4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4BFDEDC1-52A0-4BC5-8BAB-75B4E4D86A4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4BFDEDC1-52A0-4BC5-8BAB-75B4E4D86A4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
