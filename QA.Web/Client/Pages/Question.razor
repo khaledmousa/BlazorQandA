@@ -19,13 +19,18 @@ else
         </div>
         <div class="card-body">
             <h6 class="card-subtitle mb-2 text-muted">@string.Join(", ", ViewModel.Question.Tags.Select(t => t.Name))</h6>
+            <h5>
+                <button @onclick="ViewModel.VoteUp" class="btn"><i class="oi oi-plus"></i></button>
+                @ViewModel.Question.Votes.Sum(v => v.Direction == Direction.Down ? -1 : 1)
+                <button @onclick="ViewModel.VoteDown" class="btn"><i class="oi oi-minus"></i></button>
+            </h5>
             <p class="card-text">@ViewModel.Question.Text</p>
         </div>
         <ul class="list-group list-group-flush">
             @foreach (var c in ViewModel.Question.Comments)
             {
                 <li class="list-group-item small">@c.Text</li>
-            }            
+            }
         </ul>
     </div>
 

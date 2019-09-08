@@ -31,7 +31,7 @@ namespace QA.DemoServices
             VoteGenerator = new Faker<Vote>()
                 .RuleFor(v => v.Id, f => f.Random.Guid())
                 .RuleFor(v => v.Author, f => Users[f.Random.Int(0, Users.Count - 1)])
-                .RuleFor(v => v.Direction, f => f.Random.Bool(0.7f) ? Direction.Down : Direction.Up)
+                .RuleFor(v => v.Direction, f => f.Random.Bool(0.3f) ? Direction.Down : Direction.Up)
                 .RuleFor(v => v.Timestamp, f => DateTime.Now);
 
             CommentGenerator = new Faker<Comment>()

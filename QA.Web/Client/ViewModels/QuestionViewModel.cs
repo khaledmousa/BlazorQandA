@@ -27,5 +27,16 @@ namespace QA.Web.Client.ViewModels
             Question = await _httpClient.GetJsonAsync<Question>($"/api/Post/{questionId}");            
         }
 
+        public async Task VoteUp()
+        {
+            var result = await _httpClient.PostJsonAsync<Question>($"/api/Post/{Question.Id}/vote", true);
+            if (result != null) Question = result;
+        }
+
+        public async Task VoteDown()
+        {
+            var result = await _httpClient.PostJsonAsync<Question>($"/api/Post/{Question.Id}/vote", false);
+            if (result != null) Question = result;
+        }
     }
 }

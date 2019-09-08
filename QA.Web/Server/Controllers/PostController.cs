@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QA.Domain.Entities;
 using QA.Domain.Services;
+using QA.Domain.Commands;
 
 namespace QA.Web.Server.Controllers
 {
@@ -14,10 +15,12 @@ namespace QA.Web.Server.Controllers
     public class PostController : ControllerBase
     {
         private readonly IPostQueryService _postQueryService;
+        private readonly IPostCommandService _postCommandService;
 
-        public PostController(IPostQueryService postQueryService)
+        public PostController(IPostQueryService postQueryService, IPostCommandService postCommandService)
         {
             _postQueryService = postQueryService;
+            _postCommandService = postCommandService;
         }
 
         // GET: api/Post
@@ -34,6 +37,18 @@ namespace QA.Web.Server.Controllers
         public Question Get(string questionId)
         {
             return _postQueryService.GetQuestion(Guid.Parse(questionId));
+        }
+
+        [HttpPost]
+        [Route("{questionId}/vote")]
+        public Question VoteQuestion(string questionId, [FromBody] bool up)
+        {
+            //TODO: fix after authentication
+            var user = new User { Id = Guid.NewGuid(), Username = ".." };
+
+            var result = _postCommandService.Execute(new VoteQuestionCommand(user, Guid.Parse(questionId), up ? Direction.Up : Direction.Down));
+            if (result.IsSuccessful) return result.Entity as Question;
+            else return null;
         }
     }
 }
