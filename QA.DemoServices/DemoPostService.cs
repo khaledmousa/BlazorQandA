@@ -37,13 +37,14 @@ namespace QA.DemoServices
             CommentGenerator = new Faker<Comment>()
                 .RuleFor(c => c.Author, f => Users[f.Random.Int(0, Users.Count - 1)])
                 .RuleFor(c => c.Id, f => f.Random.Guid())
-                .RuleFor(c => c.Text, f => f.Waffle().Text(1, false));            
+                .RuleFor(c => c.Text, f => f.Waffle().Text(1, false));
 
             AnswerGenerator = new Faker<Answer>()
                 .RuleFor(a => a.Id, f => f.Random.Guid())
                 .RuleFor(a => a.Text, f => f.WaffleText(Random.Next(1, 3), false))
                 .RuleFor(a => a.Timestamp, f => DateTime.Now)
-                .RuleFor(a => a.Votes, f => VoteGenerator.GenerateForever().Take(Random.Next(0, 10)).ToList());
+                .RuleFor(a => a.Votes, f => VoteGenerator.GenerateForever().Take(Random.Next(0, 10)).ToList())
+                .RuleFor(a => a.Comments, f => CommentGenerator.GenerateForever().Take(Random.Next(0, 3)).ToList());
 
             foreach (var i in Enumerable.Range(0, 50)) Questions.Add(GenerateQuestion());
         }

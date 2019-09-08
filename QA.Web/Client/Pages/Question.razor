@@ -25,13 +25,16 @@ else
                 <button @onclick="ViewModel.VoteDown" class="btn"><i class="oi oi-minus"></i></button>
             </h5>
             <p class="card-text"><Markdown Value="@ViewModel.Question.Text" /></p>
+            <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#questionComments">Comments (@ViewModel.Question?.Comments?.Count())</button>
+            <div id="questionComments" class="collapse">
+                <ul class="list-group list-group-flush">
+                    @foreach (var c in ViewModel.Question.Comments)
+                    {
+                        <li class="list-group-item small">@c.Text</li>
+                    }
+                </ul>
+            </div>
         </div>
-        <ul class="list-group list-group-flush">
-            @foreach (var c in ViewModel.Question.Comments)
-            {
-                <li class="list-group-item small">@c.Text</li>
-            }
-        </ul>
     </div>
     <a href="/Question/@ViewModel?.Question?.Id/Answer" class="btn btn-primary float-right">Post Answer</a>
     <h2>Answers</h2>
@@ -49,12 +52,15 @@ else
                         </h5>
                         <p class="card-text"><Markdown Value="@a.Text" /></p>
                     </div>
-                    <ul class="list-group list-group-flush">
-                        @foreach (var c in a.Comments)
-                        {
-                            <li class="list-group-item small">@c.Text</li>
-                        }
-                    </ul>
+                    <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#@(AnswerCounter)comments">Comments (@a.Comments?.Count())</button>
+                    <div id="@(AnswerCounter++)comments" class="collapse">
+                        <ul class="list-group list-group-flush">
+                            @foreach (var c in a.Comments)
+                            {
+                                <li class="list-group-item small">@c.Text</li>
+                            }
+                        </ul>
+                    </div>
                 </div>
             </li>
         }
@@ -66,7 +72,9 @@ else
     [Parameter]
     public string QuestionId { get; set; }
 
-    PostViewModel ViewModel;    
+    private int AnswerCounter { get; set; }
+
+    PostViewModel ViewModel;
 
     protected override async Task OnInitializedAsync()
     {
