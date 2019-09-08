@@ -1,0 +1,65 @@
+﻿@page "/Question/{QuestionId}"
+
+@using QA.Web.Client.ViewModels
+@using QA.Domain.Entities
+@using System.Linq
+
+@inject HttpClient Http;
+@inject NavigationManager Navigation;
+
+@if (ViewModel == null || ViewModel.Question == null)
+{
+    <b>Loading, please wait...</b>
+}
+else
+{
+    <div class="card bg-light">
+        <div class="card-header">
+            @ViewModel.Question.Title
+        </div>
+        <div class="card-body">
+            <h6 class="card-subtitle mb-2 text-muted">@string.Join(", ", ViewModel.Question.Tags.Select(t => t.Name))</h6>
+            <p class="card-text">@ViewModel.Question.Text</p>
+        </div>
+        <ul class="list-group list-group-flush">
+            @foreach (var c in ViewModel.Question.Comments)
+            {
+                <li class="list-group-item small">@c.Text</li>
+            }            
+        </ul>
+    </div>
+
+    <h2>Answers</h2>
+    <ul class="list-group">
+        @foreach (var a in ViewModel.Question.Answers ?? Enumerable.Empty<Answer>())
+        {
+            <li class="list-group-item">
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text">@a.Text</p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        @foreach (var c in a.Comments)
+                        {
+                            <li class="list-group-item small">@c.Text</li>
+                        }
+                    </ul>
+                </div>
+            </li>
+        }
+    </ul>
+}
+
+@code{
+
+    [Parameter]
+    public string QuestionId { get; set; }
+
+    QuestionViewModel ViewModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel = new QuestionViewModel(Http, Navigation);
+        await ViewModel.LoadQuestionAsync(QuestionId);
+    }
+}

@@ -1,0 +1,41 @@
+﻿@page "/"
+
+@using QA.Web.Client.ViewModels
+@using System.Linq
+
+@inject HttpClient Http;
+@inject NavigationManager Navigation;
+
+<h1>Q&A - Questions</h1>
+
+@if (ViewModel == null || ViewModel.Questions == null)
+{
+    <b>Fetching, please wait...</b>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var q in ViewModel.Questions)
+        {
+            <li class="list-group-item">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><a href="/Question/@q.Id">@q.Title</a></h5>
+                        <h6 class="card-subtitle mb-2 text-muted">@string.Join(", ", q.Tags.Select(t => t.Name))</h6>
+                        <p class="card-text">@q.Text</p>                        
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+}
+
+@code{
+    ListQuestionsViewModel ViewModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel = new ListQuestionsViewModel(Http, Navigation);
+        await ViewModel.LoadQuestionsAsync();
+    }
+}
