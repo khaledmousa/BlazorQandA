@@ -1,0 +1,31 @@
+﻿@using QA.Web.Client.ViewModels
+@using QA.Domain.Entities
+@using System.Linq
+@using Markdig
+@using Microsoft.AspNetCore.Components
+
+<textarea @oninput="OnInputChanged" type="text" class="markdown-editor" />
+
+<h5>Preview</h5>
+@Markdown
+
+@code{
+
+    [Parameter]
+    public EventCallback<string> OnTextChanged { get; set; }
+
+    MarkupString Markdown { get; set; }
+
+    protected async Task OnInputChanged(ChangeEventArgs e)
+    {
+        var text = e.Value.ToString();
+        await OnTextChanged.InvokeAsync(text);
+        Markdown = (MarkupString)BuildHtmlFromMarkdown(text);
+        StateHasChanged();
+    }
+
+    private string BuildHtmlFromMarkdown(string value) => Markdig.Markdown.ToHtml(
+       markdown: value,
+       pipeline: new MarkdownPipelineBuilder().UseAdvancedExtensions().Build()
+   );
+}

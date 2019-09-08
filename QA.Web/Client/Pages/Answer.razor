@@ -22,20 +22,21 @@
     </div>
 
     <h3>Post Answer</h3>
-    <textarea @oninput="ViewModel.OnInputChanged" type="text" class="markdown-editor" />
 
-    @ViewModel.Markdown
+    <MardownEditor OnTextChanged="@ViewModel.SetAnswer" />    
+
+    <button class="btn btn-primary float-right" @onclick="ViewModel.AddAnswer">Post</button>
 }
 
 @code{
 
     [Parameter]
     public string QuestionId { get; set; }
-    public AnswerViewModel ViewModel;
+    public NewAnswerViewModel ViewModel;
 
     protected override async Task OnInitializedAsync()
     {
-        ViewModel = new AnswerViewModel(Http, Navigation, QuestionId, () => StateHasChanged());
+        ViewModel = new NewAnswerViewModel(Http, Navigation, QuestionId, () => StateHasChanged());
         await ViewModel.InitializeAsync();
     }
 }

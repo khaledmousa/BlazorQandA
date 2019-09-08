@@ -24,7 +24,7 @@ else
                 @ViewModel.Question.Votes.Sum(v => v.Direction == Direction.Down ? -1 : 1)
                 <button @onclick="ViewModel.VoteDown" class="btn"><i class="oi oi-minus"></i></button>
             </h5>
-            <p class="card-text">@ViewModel.Question.Text</p>
+            <p class="card-text"><Markdown Value="@ViewModel.Question.Text" /></p>
         </div>
         <ul class="list-group list-group-flush">
             @foreach (var c in ViewModel.Question.Comments)
@@ -36,12 +36,12 @@ else
     <a href="/Question/@ViewModel?.Question?.Id/Answer" class="btn btn-primary float-right">Post Answer</a>
     <h2>Answers</h2>
     <ul class="list-group">
-        @foreach (var a in ViewModel.Question.Answers ?? new List<Domain.Entities.Answer>())
+        @foreach (var a in ViewModel.Question.Answers ?? new List<AnswerViewModel>())
         {
             <li class="list-group-item">
                 <div class="card">
                     <div class="card-body">
-                        <p class="card-text">@a.Text</p>
+                        <p class="card-text"><Markdown Value="@a.Text" /></p>
                     </div>
                     <ul class="list-group list-group-flush">
                         @foreach (var c in a.Comments)
@@ -60,11 +60,11 @@ else
     [Parameter]
     public string QuestionId { get; set; }
 
-    QuestionViewModel ViewModel;
+    PostViewModel ViewModel;
 
     protected override async Task OnInitializedAsync()
     {
-        ViewModel = new QuestionViewModel(Http, Navigation);
+        ViewModel = new PostViewModel(Http, Navigation);
         await ViewModel.LoadQuestionAsync(QuestionId);
     }
 }

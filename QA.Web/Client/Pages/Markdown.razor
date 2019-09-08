@@ -1,0 +1,20 @@
+﻿@using QA.Web.Client.ViewModels
+@using QA.Domain.Entities
+@using System.Linq
+@using Markdig
+@using Microsoft.AspNetCore.Components
+
+@MarkdownString
+
+@code{
+
+    [Parameter]
+    public string Value { get; set; }
+
+    public MarkupString MarkdownString => (MarkupString)BuildHtmlFromMarkdown(Value);
+
+    private string BuildHtmlFromMarkdown(string value) => Markdig.Markdown.ToHtml(
+       markdown: value,
+       pipeline: new MarkdownPipelineBuilder().UseAdvancedExtensions().Build()
+   );
+}

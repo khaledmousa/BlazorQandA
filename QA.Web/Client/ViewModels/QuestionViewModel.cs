@@ -12,31 +12,22 @@ namespace QA.Web.Client.ViewModels
     {
         private readonly HttpClient _httpClient;
         private readonly NavigationManager _navigationManager;
+        public Question Question { get; set; }
+        public IEnumerable<AnswerViewModel> Answers { get; set; }
 
-        public Question Question;
-
-        public QuestionViewModel(HttpClient httpClient, NavigationManager navigationManager)
+        public QuestionViewModel(HttpClient httpClient, NavigationManager navigationManager, Question question)
         {
             _httpClient = httpClient;
             _navigationManager = navigationManager;
-            Question = null;
+            Question = question;
+            Answers = Question.Answers.Select(a => new AnswerViewModel(httpClient, navigationManager, a)).ToList();
         }
 
-        public async Task LoadQuestionAsync(string questionId)
-        {
-            Question = await _httpClient.GetJsonAsync<Question>($"/api/Post/{questionId}");            
-        }
-
-        public async Task VoteUp()
-        {
-            var result = await _httpClient.PostJsonAsync<Question>($"/api/Post/{Question.Id}/vote", true);
-            if (result != null) Question = result;
-        }
-
-        public async Task VoteDown()
-        {
-            var result = await _httpClient.PostJsonAsync<Question>($"/api/Post/{Question.Id}/vote", false);
-            if (result != null) Question = result;
-        }
+        public Guid Id => Question.Id;
+        public string Title => Question.Title;
+        public string Text => Question.Text;
+        public IEnumerable<Tag> Tags => Question.Tags;
+        public IEnumerable<Comment> Comments => Question.Comments;
+        public IEnumerable<Vote> Votes => Question.Votes;
     }
 }

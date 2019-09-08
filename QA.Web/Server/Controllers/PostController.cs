@@ -50,5 +50,17 @@ namespace QA.Web.Server.Controllers
             if (result.IsSuccessful) return result.Entity as Question;
             else return null;
         }
+
+        [HttpPost]
+        [Route("{questionId}/answer")]
+        public Answer AddAnswer(string questionId, [FromBody]string answer)
+        {
+            //TODO: fix after authentication
+            var user = new User { Id = Guid.NewGuid(), Username = ".." };
+
+            var result = _postCommandService.Execute(new CreateAnswerCommand(user, answer, Guid.Parse(questionId)));
+            if (result.IsSuccessful) return result.Entity as Answer;
+            else return null;
+        }
     }
 }
