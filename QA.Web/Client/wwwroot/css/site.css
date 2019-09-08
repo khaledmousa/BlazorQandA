@@ -132,4 +132,13 @@ app {
         /* Never collapse the sidebar for wide screens */
         display: block;
     }
+
+    .markdown-editor, .markdown-view {
+        max-height: 50%;
+        height: calc(50vh - 118px);
+        width: 100%;
+        padding: 30px;
+        overflow: scroll;
+    }
+
 }

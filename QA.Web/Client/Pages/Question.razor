@@ -33,10 +33,10 @@ else
             }
         </ul>
     </div>
-
+    <a href="/Question/@ViewModel?.Question?.Id/Answer" class="btn btn-primary float-right">Post Answer</a>
     <h2>Answers</h2>
     <ul class="list-group">
-        @foreach (var a in ViewModel.Question.Answers ?? Enumerable.Empty<Answer>())
+        @foreach (var a in ViewModel.Question.Answers ?? new List<Domain.Entities.Answer>())
         {
             <li class="list-group-item">
                 <div class="card">
