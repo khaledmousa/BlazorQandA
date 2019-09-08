@@ -45,6 +45,7 @@ else
                             <button @onclick="a.VoteUp" class="btn"><i class="oi oi-plus"></i></button>
                             @a.Votes.Sum(v => v.Direction == Direction.Down ? -1 : 1)
                             <button @onclick="a.VoteDown" class="btn"><i class="oi oi-minus"></i></button>
+                            <button @onclick="@a.AcceptAnswer" class="btn"><i class="oi oi-check" style="color:@(a.IsAccepted ? "green" : "gray")"></i></button>
                         </h5>
                         <p class="card-text"><Markdown Value="@a.Text" /></p>
                     </div>
@@ -65,7 +66,7 @@ else
     [Parameter]
     public string QuestionId { get; set; }
 
-    PostViewModel ViewModel;
+    PostViewModel ViewModel;    
 
     protected override async Task OnInitializedAsync()
     {

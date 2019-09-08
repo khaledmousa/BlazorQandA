@@ -20,7 +20,9 @@ namespace QA.Web.Client.ViewModels
             _httpClient = httpClient;
             _navigationManager = navigationManager;
             Question = question;
-            Answers = Question.Answers.Select(a => new AnswerViewModel(httpClient, navigationManager, Question.Id, a)).ToList();
+            Answers = Question.Answers.Select(a => new AnswerViewModel(httpClient, navigationManager, this, a))
+                .OrderByDescending(a => a.IsAccepted)
+                .ThenByDescending(a => a.Votes.Sum(v => v.Direction == Direction.Up ? 1 : -1)).ToList();
         }
 
         public Guid Id => Question.Id;
@@ -29,5 +31,11 @@ namespace QA.Web.Client.ViewModels
         public IEnumerable<Tag> Tags => Question.Tags;
         public IEnumerable<Comment> Comments => Question.Comments;
         public IEnumerable<Vote> Votes => Question.Votes;
+
+        public Guid? AcceptedAnswer
+        {
+            get => Question.AcceptedAnswerId;
+            set => Question.AcceptedAnswerId = value;
+        }
     }
 }

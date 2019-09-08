@@ -52,6 +52,16 @@ namespace QA.Web.Server.Controllers
         }
 
         [HttpPost]
+        [Route("{questionId}/{answerId}/accept")]
+        public void AcceptAnswer(string questionId, string answerId)
+        {
+            //TODO: fix after authentication
+            var user = new User { Id = Guid.NewGuid(), Username = ".." };
+
+            var result = _postCommandService.Execute(new AcceptAnswerCommand(user, Guid.Parse(answerId), true));
+        }
+
+        [HttpPost]
         [Route("{questionId}/{answerId}/vote")]
         public Answer VoteAnswer(string questionId, string answerId, [FromBody] bool up)
         {
