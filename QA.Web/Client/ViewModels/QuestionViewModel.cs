@@ -14,6 +14,7 @@ namespace QA.Web.Client.ViewModels
         private readonly NavigationManager _navigationManager;
         public Question Question { get; set; }
         public IEnumerable<AnswerViewModel> Answers { get; set; }
+        public string NewCommentText { get; set; }
 
         public QuestionViewModel(HttpClient httpClient, NavigationManager navigationManager, Question question)
         {
@@ -31,6 +32,13 @@ namespace QA.Web.Client.ViewModels
         public IEnumerable<Tag> Tags => Question.Tags;
         public IEnumerable<Comment> Comments => Question.Comments;
         public IEnumerable<Vote> Votes => Question.Votes;
+
+        public async Task AddComment()
+        {
+            var comment = await _httpClient.PostJsonAsync<Comment>($"api/Post/{Id}/comment", NewCommentText);
+            Question.Comments.Add(comment);
+            NewCommentText = string.Empty;
+        }
 
         public Guid? AcceptedAnswer
         {

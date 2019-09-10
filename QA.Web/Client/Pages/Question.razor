@@ -33,6 +33,8 @@ else
                         <li class="list-group-item small">@c.Text</li>
                     }
                 </ul>
+                <textarea @bind="ViewModel.Question.NewCommentText"></textarea>
+                <button type="button" class="btn btn-light" @onclick="ViewModel.Question.AddComment">Comment</button>
             </div>
         </div>
     </div>

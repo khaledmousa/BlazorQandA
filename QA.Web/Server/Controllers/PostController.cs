@@ -52,6 +52,18 @@ namespace QA.Web.Server.Controllers
         }
 
         [HttpPost]
+        [Route("{questionId}/comment")]
+        public Comment AddQuestionComment(string questionId, [FromBody] string text)
+        {
+            //TODO: fix after authentication
+            var user = new User { Id = Guid.NewGuid(), Username = ".." };
+
+            var result = _postCommandService.Execute(new CreateCommentCommand(user, text, Guid.Parse(questionId)));
+            if (result.IsSuccessful) return result.Entity as Comment;
+            else return null;
+        }
+
+        [HttpPost]
         [Route("{questionId}/{answerId}/accept")]
         public void AcceptAnswer(string questionId, string answerId)
         {
