@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using QA.Domain.Entities;
 using QA.Domain.Services;
 using QA.Domain.Commands;
+using Microsoft.AspNetCore.Authorization;
 
 namespace QA.Web.Server.Controllers
 {
@@ -24,7 +25,7 @@ namespace QA.Web.Server.Controllers
         }
 
         // GET: api/Post
-        [HttpGet]
+        [HttpGet]        
         public IEnumerable<Question> Get(string searchTerm, int page, int count)
         {
             var questions = _postQueryService.GetQuestions(searchTerm);

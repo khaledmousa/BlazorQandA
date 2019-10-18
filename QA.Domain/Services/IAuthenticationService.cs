@@ -7,7 +7,6 @@ namespace QA.Domain.Services
 {
     public interface IAuthenticationService
     {
-        User Login(string username, string password);
-        User Register(string email, string password, string username);
+        User Login(string email, string password);        
     }
 }

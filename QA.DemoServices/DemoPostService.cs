@@ -13,8 +13,9 @@ namespace QA.DemoServices
     public class DemoPostService : IPostCommandService, IPostQueryService
     {
         #region ctor and setup
+        private readonly IUserService _userService;
 
-        internal static List<User> Users { get; private set; }
+        private List<User> Users { get; set; }
         private List<Question> Questions{ get; set; }
         private List<Tag> Tags { get; set; }
         private Random Random { get; }
@@ -22,9 +23,10 @@ namespace QA.DemoServices
         private Faker<Comment> CommentGenerator { get; }
         private Faker<Answer> AnswerGenerator { get; }
 
-        public DemoPostService()
+        public DemoPostService(IUserService userService)
         {
-            SetupUsers();
+            _userService = userService;
+            Users = _userService.GetUsers().ToList();
             SetupTags();
             Questions = new List<Question>();
             Random = new Random(DateTime.Now.Millisecond);
@@ -77,16 +79,6 @@ namespace QA.DemoServices
                 new Tag { Id = Guid.NewGuid(), Name = "Python" },
                 new Tag { Id = Guid.NewGuid(), Name = "Java" },
             };
-        }
-
-        private void SetupUsers(int num = 10)
-        {
-            Users = new List<User>();
-            var userGenerator = new Faker<User>()
-                .RuleFor(u => u.Username, f => f.Name.FirstName())
-                .RuleFor(u => u.Email, f => f.Internet.Email());
-
-            for (int i = 0; i < num; i++) Users.Add(userGenerator.Generate());
         }
 
         #endregion
