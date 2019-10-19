@@ -1,0 +1,18 @@
+﻿@page "/Logout"
+
+@using Microsoft.AspNetCore.Components.Authorization
+@using Blazored.LocalStorage
+@using QA.Web.Client.ViewModels
+@using QA.Domain.Entities
+
+@inject NavigationManager Navigation;
+@inject IAuthenticationManager AuthManager;
+
+@code{    
+
+    protected override async Task OnInitializedAsync()        
+    {
+        await AuthManager.LogoutAsync();
+        Navigation.NavigateTo("/");
+    }
+}
