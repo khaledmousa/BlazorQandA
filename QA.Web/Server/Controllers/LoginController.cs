@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using QA.Domain.Services;
 
 namespace QA.Web.Server.Controllers
@@ -27,17 +28,19 @@ namespace QA.Web.Server.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(string email, string password)          
+        public IActionResult Login([FromBody] JObject loginInfoRaw)          
         {
+            var loginInfo = loginInfoRaw.ToObject<LoginInformation>();
             //based on https://chrissainty.com/securing-your-blazor-apps-authentication-with-clientside-blazor-using-webapi-aspnet-core-identity/
 
-            var result = _authenticationService.Login(email, password);
+            var result = _authenticationService.Login(loginInfo.Email, loginInfo.Password);
 
-            if (result == null) return BadRequest(null);
+            if (result == null) return Ok(new { Success = false });
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.Email, email)
+                new Claim(ClaimTypes.NameIdentifier, result.Id.ToString()),
+                new Claim(ClaimTypes.Email, result.Email)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSecurityKey"]));
@@ -52,7 +55,13 @@ namespace QA.Web.Server.Controllers
                 signingCredentials: creds
             );
 
-            return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+            return Ok(new { Success = true, Token = new JwtSecurityTokenHandler().WriteToken(token) });
         }
+    }
+
+    public class LoginInformation
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
     }
 }

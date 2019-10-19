@@ -25,7 +25,7 @@ namespace QA.DemoServices
             Users.Add(new User
             {
                 Id = Guid.NewGuid(),
-                Email = "demo.user@demoqanda.com",
+                Email = "demo@demo.com",
                 Username = "DemoUser",
                 Password = HashPassword("demo")
             });
