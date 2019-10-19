@@ -28,7 +28,7 @@ namespace QA.Web.Client.ViewModels
 
         public Guid Id => Question.Id;
         public string Title => Question.Title;
-        public string Text => Question.Text;
+        public string Text => Question.Text;        
         public IEnumerable<Tag> Tags => Question.Tags;
         public IEnumerable<Comment> Comments => Question.Comments;
         public IEnumerable<Vote> Votes => Question.Votes;

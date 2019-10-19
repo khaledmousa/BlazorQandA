@@ -22,7 +22,10 @@ else
                     <div class="card-body">
                         <h5 class="card-title"><a href="/Question/@q.Id">@q.Title</a></h5>
                         <h6 class="card-subtitle mb-2 text-muted">@string.Join(", ", q.Tags.Select(t => t.Name))</h6>
-                        <p class="card-text">@q.Text</p>                        
+                        <p class="card-text">@q.Text</p>
+                    </div>
+                    <div class="card-footer">
+                        Asked by @q.AuthorName at @q.Timestamp
                     </div>
                 </div>
             </li>

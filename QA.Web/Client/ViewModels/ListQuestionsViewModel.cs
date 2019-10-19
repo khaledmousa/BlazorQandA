@@ -42,7 +42,7 @@ namespace QA.Web.Client.ViewModels
         }
 
         public Guid Id => _question.Id;
-
+        public string AuthorName => _question.Author?.Username;        
         public string Title => _question.Title;
         public string Text => _question.Text.Length < 200 ? _question.Text : _question.Text.Substring(0, 200) + "...";
         public IEnumerable<Tag> Tags => _question.Tags;
