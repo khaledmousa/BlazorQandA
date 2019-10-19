@@ -8,6 +8,7 @@ using QA.Domain.Entities;
 using QA.Domain.Services;
 using QA.Domain.Commands;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace QA.Web.Server.Controllers
 {
@@ -17,11 +18,13 @@ namespace QA.Web.Server.Controllers
     {
         private readonly IPostQueryService _postQueryService;
         private readonly IPostCommandService _postCommandService;
+        private readonly IUserService _userService;
 
-        public PostController(IPostQueryService postQueryService, IPostCommandService postCommandService)
+        public PostController(IPostQueryService postQueryService, IPostCommandService postCommandService, IUserService userService)
         {
             _postQueryService = postQueryService;
             _postCommandService = postCommandService;
+            _userService = userService;
         }
 
         // GET: api/Post
@@ -44,8 +47,7 @@ namespace QA.Web.Server.Controllers
         [Route("{questionId}/vote")]
         public Question VoteQuestion(string questionId, [FromBody] bool up)
         {
-            //TODO: fix after authentication
-            var user = new User { Id = Guid.NewGuid(), Username = ".." };
+            var user = GetCurrentUser();
 
             var result = _postCommandService.Execute(new VoteQuestionCommand(user, Guid.Parse(questionId), up ? Direction.Up : Direction.Down));
             if (result.IsSuccessful) return result.Entity as Question;
@@ -56,8 +58,7 @@ namespace QA.Web.Server.Controllers
         [Route("{questionId}/comment")]
         public Comment AddQuestionComment(string questionId, [FromBody] string text)
         {
-            //TODO: fix after authentication
-            var user = new User { Id = Guid.NewGuid(), Username = ".." };
+            var user = GetCurrentUser();
 
             var result = _postCommandService.Execute(new CreateCommentCommand(user, text, Guid.Parse(questionId)));
             if (result.IsSuccessful) return result.Entity as Comment;
@@ -68,8 +69,7 @@ namespace QA.Web.Server.Controllers
         [Route("{questionId}/{answerId}/accept")]
         public void AcceptAnswer(string questionId, string answerId)
         {
-            //TODO: fix after authentication
-            var user = new User { Id = Guid.NewGuid(), Username = ".." };
+            var user = GetCurrentUser();
 
             var result = _postCommandService.Execute(new AcceptAnswerCommand(user, Guid.Parse(answerId), true));
         }
@@ -78,8 +78,7 @@ namespace QA.Web.Server.Controllers
         [Route("{questionId}/{answerId}/vote")]
         public Answer VoteAnswer(string questionId, string answerId, [FromBody] bool up)
         {
-            //TODO: fix after authentication
-            var user = new User { Id = Guid.NewGuid(), Username = ".." };
+            var user = GetCurrentUser();
 
             var result = _postCommandService.Execute(new VoteAnswerCommand(user, Guid.Parse(answerId), up ? Direction.Up : Direction.Down));
             if (result.IsSuccessful) return result.Entity as Answer;
@@ -90,12 +89,22 @@ namespace QA.Web.Server.Controllers
         [Route("{questionId}/answer")]
         public Answer AddAnswer(string questionId, [FromBody]string answer)
         {
-            //TODO: fix after authentication
-            var user = new User { Id = Guid.NewGuid(), Username = ".." };
+            var user = GetCurrentUser();
 
             var result = _postCommandService.Execute(new CreateAnswerCommand(user, answer, Guid.Parse(questionId)));
             if (result.IsSuccessful) return result.Entity as Answer;
             else return null;
+        }
+
+        private User GetCurrentUser()
+        {
+            var userId = HttpContext.User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var user = _userService.GetById(Guid.Parse(userId));
+                return user;
+            }
+            return null;
         }
     }
 }
