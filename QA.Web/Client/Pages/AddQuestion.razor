@@ -5,17 +5,21 @@
 @using System.Linq
 @using Markdig
 
-
 @inject HttpClient Http;
 @inject NavigationManager Navigation;
+@inject IJSRuntime JsRuntime;
+
 
 @if (ViewModel != null)
 {
     <h3>New Question</h3>
 
     <div class="form-group">
-        <label for="exampleInputEmail1">Tile</label>
+        <label>Tile</label>
         <input type="text" class="form-control" placeholder="" @bind="ViewModel.Title" />
+
+        <label>Tags</label>
+        <input type="text" id="tags" value="One,Two,Three" />
     </div>
 
     <MardownEditor OnTextChanged="@ViewModel.SetQuestionText" />
@@ -29,6 +33,11 @@
 
     protected override void OnInitialized()
     {
-        ViewModel = new NewQuestionViewModel(Http, Navigation);
+        ViewModel = new NewQuestionViewModel(Http, Navigation);        
+    }    
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JsRuntime.InvokeVoidAsync("setAsTagsInput", "tags");
     }
 }
