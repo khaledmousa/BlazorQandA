@@ -7,8 +7,7 @@
 
 @inject HttpClient Http;
 @inject NavigationManager Navigation;
-@inject AuthenticationStateProvider AuthProvider;
-@inject ILocalStorageService LocalStorage;
+@inject IAuthenticationManager AuthManager;
 
 @if (ViewModel != null)
 {
@@ -43,6 +42,6 @@
 
     protected override void OnInitialized()
     {
-        ViewModel = new LoginViewModel(Http, Navigation, LocalStorage, AuthProvider);
+        ViewModel = new LoginViewModel(Http, Navigation, AuthManager);
     }
 }

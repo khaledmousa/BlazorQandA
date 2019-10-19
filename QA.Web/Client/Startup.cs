@@ -12,6 +12,7 @@ namespace QA.Web.Client
             services.AddBlazoredLocalStorage();
             services.AddAuthorizationCore();
             services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
+            services.AddScoped<IAuthenticationManager, AuthenticationManager>();
         }
 
         public void Configure(IComponentsApplicationBuilder app)

@@ -40,7 +40,8 @@ namespace QA.Web.Server.Controllers
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, result.Id.ToString()),
-                new Claim(ClaimTypes.Email, result.Email)
+                new Claim(ClaimTypes.Email, result.Email),
+                new Claim(ClaimTypes.Name, result.Username)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSecurityKey"]));

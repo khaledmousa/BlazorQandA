@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
+using QA.Web.Client.ViewModels;
 
 namespace QA.Web.Client
 {
@@ -25,16 +26,16 @@ namespace QA.Web.Client
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var savedToken = await _localStorage.GetItemAsync<string>("authToken");
+            var savedToken = await _localStorage.GetItemAsync<LoginToken>("authToken");
 
-            if (string.IsNullOrWhiteSpace(savedToken))
+            if (savedToken == null)
             {
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
             }
 
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", savedToken);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", savedToken.Token);
 
-            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(savedToken), "jwt")));
+            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(savedToken.Token), "jwt")));
         }
 
         public void MarkUserAsAuthenticated(string token)
@@ -63,6 +64,9 @@ namespace QA.Web.Client
 
             if(keyValuePairs.TryGetValue(ClaimTypes.Email, out object email))
                 claims.Add(new Claim(ClaimTypes.Email, email.ToString()));
+
+            if (keyValuePairs.TryGetValue(ClaimTypes.Name, out object name))
+                claims.Add(new Claim(ClaimTypes.Name, name.ToString()));
 
             return claims;
         }

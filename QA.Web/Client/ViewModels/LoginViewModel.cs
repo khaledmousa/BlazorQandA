@@ -14,27 +14,23 @@ namespace QA.Web.Client.ViewModels
     {
         private readonly HttpClient _httpClient;
         private readonly NavigationManager _navigationManager;
-        private readonly ILocalStorageService _localStorage;
-        private readonly AuthenticationStateProvider _authenticationStateProvider;
-
+        private readonly IAuthenticationManager _authenticationManager;
         public string Email { get; set; }
         public string Password { get; set; }
 
         public bool? IsAuthenticated { get; set; }
 
-        public LoginViewModel(HttpClient httpClient, NavigationManager navigationManager,
-            ILocalStorageService localStorage, AuthenticationStateProvider authenticationStateProvider)
+        public LoginViewModel(HttpClient httpClient, NavigationManager navigationManager, IAuthenticationManager authenticationManager)
         {
             _httpClient = httpClient;
             _navigationManager = navigationManager;
-            _localStorage = localStorage;
-            _authenticationStateProvider = authenticationStateProvider;
+            _authenticationManager = authenticationManager;
             IsAuthenticated = null;
         }
 
         public async Task Login()
         {
-            var result = await _httpClient.PostJsonAsync<LoginResult>("api/login", new { Email, Password });
+            var result = await _httpClient.PostJsonAsync<LoginToken>("api/login", new { Email, Password });
             
             if (!result.Success)
             {
@@ -42,19 +38,11 @@ namespace QA.Web.Client.ViewModels
             }
             else
             {
-                await _localStorage.SetItemAsync("authToken", result);
-                ((ApiAuthenticationStateProvider)_authenticationStateProvider).MarkUserAsAuthenticated(result.Token);
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", result.Token);
+                await _authenticationManager.LoginAsync(result);
 
                 IsAuthenticated = true;
                 _navigationManager.NavigateTo("/");
             }
         }
-    }
-
-    public class LoginResult
-    {
-        public bool Success { get; set; }
-        public string Token { get; set; }
-    }
+    }   
 }
