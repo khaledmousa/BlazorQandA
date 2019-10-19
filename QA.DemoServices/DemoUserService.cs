@@ -3,7 +3,9 @@ using QA.Domain.Entities;
 using QA.Domain.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -15,22 +17,14 @@ namespace QA.DemoServices
 
         public DemoUserService()
         {
-            Users = new List<User>();
-            var userGenerator = new Faker<User>()
-                .RuleFor(u => u.Id, f => f.Random.Guid())
-                .RuleFor(u => u.Username, f => f.Name.FirstName())
-                .RuleFor(u => u.Email, f => f.Internet.Email())
-                .RuleFor(u => u.Password, f => HashPassword(f.Internet.Password()));            
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = "QA.DemoServices.Users.json";
 
-            Users.Add(new User
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            using (StreamReader reader = new StreamReader(stream))
             {
-                Id = Guid.NewGuid(),
-                Email = "demo@demo.com",
-                Username = "DemoUser",
-                Password = HashPassword("demo")
-            });
-
-            for (int i = 0; i < 50; i++) Users.Add(userGenerator.Generate());
+                Users = Newtonsoft.Json.JsonConvert.DeserializeObject<List<User>>(reader.ReadToEnd());
+            }
         }       
 
         public User CreateUser(User user)

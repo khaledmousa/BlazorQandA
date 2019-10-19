@@ -12,7 +12,7 @@ namespace QA.Domain.Commands
         public IEnumerable<Tag> Tags { get; private set; }
 
         public CreateQuestionCommand(User issuedBy, string title, string text, IEnumerable<Tag> tags) : base(issuedBy)
-        {
+        {            
             Title = title;
             Text = text;
             Tags = tags;

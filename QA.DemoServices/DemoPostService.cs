@@ -117,7 +117,19 @@ namespace QA.DemoServices
 
         private CommandResponse ExecuteCreateQuestion(CreateQuestionCommand command)
         {
-            var question = GenerateQuestion(command.IssuedBy.Id, command.Title, command.Text, command.Tags);
+            var question = new Question
+            {
+                Id = Guid.NewGuid(),
+                Author = command.IssuedBy,
+                Tags = command.Tags?.ToList() ?? new List<Tag>(),
+                Text = command.Text,
+                Title = command.Title,
+                Votes = new List<Vote>(),
+                Timestamp = DateTime.Now,
+                Comments = new List<Comment>(),
+                Answers = new List<Answer>()
+            };
+
             Questions.Add(question);
             return CommandResponse.Success(question);
         }
@@ -310,12 +322,12 @@ namespace QA.DemoServices
 
         public IEnumerable<Question> GetQuestions(Tag tag)
         {
-            return Questions.Where(q => q.Tags.Any(t => t.Name == tag.Name));
+            return Questions.Where(q => q.Tags.Any(t => t.Name == tag.Name)).OrderByDescending(q => q.Timestamp);
         }
 
         public IEnumerable<Question> GetQuestions(string searchTerm)
         {
-            return string.IsNullOrEmpty(searchTerm) ? Questions : Questions.Where(q => q.Text.Contains(searchTerm));
+            return (string.IsNullOrEmpty(searchTerm) ? Questions : Questions.Where(q => q.Text.Contains(searchTerm))).OrderByDescending(q => q.Timestamp);
         }
 
         public IEnumerable<Tag> GetTags(string searchTerm)

@@ -43,6 +43,16 @@ namespace QA.Web.Server.Controllers
             return _postQueryService.GetQuestion(Guid.Parse(questionId));
         }
 
+        [HttpPost]        
+        public Question AddQuestion([FromBody]Question question)
+        {
+            var user = GetCurrentUser();
+
+            var result = _postCommandService.Execute(new CreateQuestionCommand(user, question.Title, question.Text, question.Tags));
+            if (result.IsSuccessful) return result.Entity as Question;
+            else return null;
+        }
+
         [HttpPost]
         [Route("{questionId}/vote")]
         public Question VoteQuestion(string questionId, [FromBody] bool up)
