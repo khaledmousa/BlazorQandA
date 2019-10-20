@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using QA.Domain.Commands;
+using QA.Domain.Dto;
 using QA.Domain.Entities;
 using QA.Domain.Services;
 using System;
@@ -340,20 +341,27 @@ namespace QA.DemoServices
             return Questions.SingleOrDefault(q => q.Id == questionId);
         }
 
-        public IEnumerable<Question> GetQuestions(string searchTerm)
+        public QuestionListDto GetQuestions(string searchTerm)
         {
-            return GetQuestionsInternal(searchTerm, null, null);
+            var items = GetQuestionsInternal(searchTerm, null, null, out var count);
+            return new QuestionListDto
+            {
+                Questions = items,
+                FullCount = count,
+                Page = null
+            };
         }
 
-        public IEnumerable<Question> GetQuestions(string searchTerm, int itemsPerPage, int page)
+        public QuestionListDto GetQuestions(string searchTerm, int itemsPerPage, int page)
         {
-            return GetQuestionsInternal(searchTerm, itemsPerPage, page);
-        }
-        
-        public int GetQuestionCount(string searchTerm)
-        {
-            return GetQuestionsInternal(searchTerm, null, null).Count();
-        }
+            var items = GetQuestionsInternal(searchTerm, itemsPerPage, page, out var count);
+            return new QuestionListDto
+            {
+                Questions = items,
+                FullCount = count,
+                Page = page
+            };
+        }        
 
         public IEnumerable<Tag> GetTags()
         {
@@ -361,7 +369,7 @@ namespace QA.DemoServices
         }
         #endregion
 
-        private IEnumerable<Question> GetQuestionsInternal(string searchTerm, int? itemsPerPage, int? page)
+        private IEnumerable<Question> GetQuestionsInternal(string searchTerm, int? itemsPerPage, int? page, out int count)
         {
             var search = string.Empty;
             var tag = string.Empty;
@@ -379,6 +387,8 @@ namespace QA.DemoServices
             questions = string.IsNullOrEmpty(tag) ? 
                 questions : 
                 questions.Where(q => q.Tags.Any(t => t.Name.Equals(tag, StringComparison.InvariantCultureIgnoreCase)));
+
+            count = questions.Count();
 
             if (page.HasValue && itemsPerPage.HasValue)
                 questions = questions.Skip(page.Value * itemsPerPage.Value).Take(itemsPerPage.Value);

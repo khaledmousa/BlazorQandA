@@ -6,6 +6,7 @@
 
 @inject HttpClient Http;
 @inject NavigationManager Navigation;
+@inject Microsoft.JSInterop.IJSRuntime JSRuntime;
 
 <h1>Q&A - Questions</h1>
 
@@ -14,7 +15,7 @@
     <b>Fetching, please wait...</b>
 }
 else
-{   
+{
     <div class="input-group mb-3">
         <input type="text" class="form-control" placeholder="Enter search text" @bind="ViewModel.SearchText" />
         <div class="input-group-append">
@@ -45,6 +46,16 @@ else
             </li>
         }
     </ul>
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(ViewModel.Page <= 0 ? "disabled" : "")"><a href="/?searchTerm=@ViewModel.SearchText&page=@(ViewModel.Page-1)" class="page-link">Previous</a></li>
+            @for (int i = 0; i < ViewModel.TotalPages ; i++)
+            {
+                <li class="page-item @(i == ViewModel.Page ? "active" : "")"><a href="/?searchTerm=@ViewModel.SearchText&page=@i" class="page-link">@(i + 1)</a></li>
+            }
+            <li class="page-item @(ViewModel.Page >= (ViewModel.TotalPages - 1) ? "disabled" : "")"><a href="/?searchTerm=@ViewModel.SearchText&page=@(ViewModel.Page+1)" class="page-link">Next</a></li>
+        </ul>
+    </nav>
 }
 
 @code{
@@ -55,19 +66,18 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-
-        var (search, page) = GetQueryParameters();
         ViewModel = new ListQuestionsViewModel(Http, Navigation);
-        ViewModel.SearchText = search;
-        await ViewModel.LoadQuestionsAsync(search, page);
+        await UpdateQuestionsAsync();
 
         ThisUri = Navigation.ToAbsoluteUri(Navigation.Uri).AbsolutePath;
         Navigation.LocationChanged += OnLocationChanged;
     }
 
-    public void Dispose()
+    private async Task UpdateQuestionsAsync()
     {
-        Navigation.LocationChanged -= OnLocationChanged;
+        var (search, page) = GetQueryParameters();
+        ViewModel.SearchText = search;
+        await ViewModel.LoadQuestionsAsync(search, page);
     }
 
     private async void OnLocationChanged(object sender, LocationChangedEventArgs e)
@@ -76,9 +86,7 @@ else
         {
             if (Navigation.ToAbsoluteUri(e.Location).AbsolutePath == ThisUri)
             {
-                var (search, page) = GetQueryParameters();
-                ViewModel.SearchText = search;
-                await ViewModel.LoadQuestionsAsync(search, page);
+                await UpdateQuestionsAsync();
                 StateHasChanged();
             }
         }
@@ -100,5 +108,11 @@ else
             page = pageNum;
         }
         return (search, page);
+    }
+
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
     }
 }
