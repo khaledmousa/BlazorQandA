@@ -61,7 +61,7 @@ namespace QA.DemoServices
                 Text = string.IsNullOrEmpty(question) ? WaffleEngine.Text(Random.Next(1, 3), false) : question,
                 Title = string.IsNullOrEmpty(title) ? WaffleEngine.Title() : title,
                 Votes = VoteGenerator.GenerateForever().Take(Random.Next(0, 50)).ToList(),
-                Timestamp = DateTime.Now,
+                Timestamp = string.IsNullOrEmpty(title) ? new Faker().Date.Past(1, DateTime.Now) : DateTime.Now,
                 Comments = CommentGenerator.GenerateForever().Take(Random.Next(0, 10)).ToList(),
                 Answers = AnswerGenerator.GenerateForever().Take(Random.Next(0, 5)).ToList()
             };                            

@@ -14,6 +14,8 @@ namespace QA.Web.Client.ViewModels
         private readonly HttpClient _httpClient;
         private readonly NavigationManager _navigationManager;        
 
+        public string SearchText { get; set; }
+
         public QuestionBrief[] Questions { get; private set; }
 
         public ListQuestionsViewModel(HttpClient httpClient, NavigationManager navigationManager)
@@ -27,6 +29,11 @@ namespace QA.Web.Client.ViewModels
         {            
             var questions = await _httpClient.GetJsonAsync<Question[]>($"api/Post?searchTerm={searchTerm}&page={page}&count=10");            
             Questions = questions.Select(q => new QuestionBrief(q)).ToArray();            
+        }
+
+        public void OnSearch()
+        {
+            _navigationManager.NavigateTo($"/?search={SearchText}");
         }
     }
 

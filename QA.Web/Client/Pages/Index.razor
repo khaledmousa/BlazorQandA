@@ -14,7 +14,15 @@
     <b>Fetching, please wait...</b>
 }
 else
-{
+{   
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Enter search text" @bind="ViewModel.SearchText" />
+        <div class="input-group-append">
+            <button class="btn btn-primary" @onclick="ViewModel.OnSearch">Search</button>
+        </div>
+    </div>
+
+
     <ul class="list-group">
         @foreach (var q in ViewModel.Questions)
         {
@@ -46,12 +54,13 @@ else
     string ThisUri;
 
     protected override async Task OnInitializedAsync()
-    {        
-        ViewModel = new ListQuestionsViewModel(Http, Navigation);
+    {
 
         var (search, page) = GetQueryParameters();
+        ViewModel = new ListQuestionsViewModel(Http, Navigation);
+        ViewModel.SearchText = search;
         await ViewModel.LoadQuestionsAsync(search, page);
-        
+
         ThisUri = Navigation.ToAbsoluteUri(Navigation.Uri).AbsolutePath;
         Navigation.LocationChanged += OnLocationChanged;
     }
@@ -64,12 +73,13 @@ else
     private async void OnLocationChanged(object sender, LocationChangedEventArgs e)
     {
         try
-        {            
+        {
             if (Navigation.ToAbsoluteUri(e.Location).AbsolutePath == ThisUri)
-            {                
-                var (search, page) = GetQueryParameters();              
+            {
+                var (search, page) = GetQueryParameters();
+                ViewModel.SearchText = search;
                 await ViewModel.LoadQuestionsAsync(search, page);
-                StateHasChanged();                
+                StateHasChanged();
             }
         }
         catch (Exception ex) { Console.WriteLine(ex.Message); }
