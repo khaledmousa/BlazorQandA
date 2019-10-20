@@ -10,6 +10,10 @@ app {
     flex-direction: column;
 }
 
+a {
+    color: #EE9500;
+}
+
 .top-row {
     height: 3.5rem;
     display: flex;
@@ -26,7 +30,7 @@ app {
     }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background-color: #FFA500;
 }
 
     .sidebar .top-row {
@@ -58,7 +62,7 @@ app {
     }
 
     .nav-item a {
-        color: #d7d7d7;
+        color: #060606;
         border-radius: 4px;
         height: 3rem;
         display: flex;
@@ -140,5 +144,4 @@ app {
         padding: 30px;
         overflow: scroll;
     }
-
 }

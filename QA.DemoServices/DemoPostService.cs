@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using QA.Domain.Commands;
+using QA.Domain.Dto;
 using QA.Domain.Entities;
 using QA.Domain.Services;
 using System;
@@ -57,11 +58,11 @@ namespace QA.DemoServices
             {
                 Id = Guid.NewGuid(),
                 Author = userId.HasValue ? Users.Single(u => u.Id == userId.Value) : Users[Random.Next(0, Users.Count - 1)],
-                Tags = tags == null ? Tags.OrderBy(t => Random.Next(0, 100)).Take(Random.Next(1, Tags.Count - 1)).ToList() : tags.ToList(),
+                Tags = tags == null ? Tags.OrderBy(t => Random.Next(0, 100)).Take(Random.Next(1, 4)).OrderBy(t => t.Name).ToList() : tags.ToList(),
                 Text = string.IsNullOrEmpty(question) ? WaffleEngine.Text(Random.Next(1, 3), false) : question,
                 Title = string.IsNullOrEmpty(title) ? WaffleEngine.Title() : title,
                 Votes = VoteGenerator.GenerateForever().Take(Random.Next(0, 50)).ToList(),
-                Timestamp = DateTime.Now,
+                Timestamp = string.IsNullOrEmpty(title) ? new Faker().Date.Past(1, DateTime.Now) : DateTime.Now,
                 Comments = CommentGenerator.GenerateForever().Take(Random.Next(0, 10)).ToList(),
                 Answers = AnswerGenerator.GenerateForever().Take(Random.Next(0, 5)).ToList()
             };                            
@@ -71,18 +72,37 @@ namespace QA.DemoServices
         {
             Tags = new List<Tag>
             {
-                new Tag { Id = Guid.NewGuid(), Name = "C#" },
                 new Tag { Id = Guid.NewGuid(), Name = "ASP.NET" },
-                new Tag { Id = Guid.NewGuid(), Name = "WPF" },
-                new Tag { Id = Guid.NewGuid(), Name = "SQL" },
+                new Tag { Id = Guid.NewGuid(), Name = "Ajax" },
+                new Tag { Id = Guid.NewGuid(), Name = "Blazor" },
+                new Tag { Id = Guid.NewGuid(), Name = "Busines Intelligence" },
+                new Tag { Id = Guid.NewGuid(), Name = "C#" },
+                new Tag { Id = Guid.NewGuid(), Name = "COM" },
+                new Tag { Id = Guid.NewGuid(), Name = "Continuous Integration" },
+                new Tag { Id = Guid.NewGuid(), Name = "Cross Platform" },
+                new Tag { Id = Guid.NewGuid(), Name = "Django" },
+                new Tag { Id = Guid.NewGuid(), Name = "Entity Framework" },
+                new Tag { Id = Guid.NewGuid(), Name = "F#" },
+                new Tag { Id = Guid.NewGuid(), Name = "FORTRAN" },
+                new Tag { Id = Guid.NewGuid(), Name = "Golang" },
+                new Tag { Id = Guid.NewGuid(), Name = "Hadoop" },                
+                new Tag { Id = Guid.NewGuid(), Name = "Java" },
+                new Tag { Id = Guid.NewGuid(), Name = "jQuery" },
+                new Tag { Id = Guid.NewGuid(), Name = "Javascript" },
+                new Tag { Id = Guid.NewGuid(), Name = "Kotlin" },
+                new Tag { Id = Guid.NewGuid(), Name = ".Net" },
+                new Tag { Id = Guid.NewGuid(), Name = "OOP" },
+                new Tag { Id = Guid.NewGuid(), Name = "Pascal" },
                 new Tag { Id = Guid.NewGuid(), Name = "Php" },
                 new Tag { Id = Guid.NewGuid(), Name = "Python" },
-                new Tag { Id = Guid.NewGuid(), Name = "Java" },
+                new Tag { Id = Guid.NewGuid(), Name = "SQL" },                                
+                new Tag { Id = Guid.NewGuid(), Name = "WPF" },
             };
         }
 
         #endregion
 
+        #region IPostCommandService
         public CommandResponse Execute(CommandBase command)
         {
             switch (command)
@@ -117,7 +137,19 @@ namespace QA.DemoServices
 
         private CommandResponse ExecuteCreateQuestion(CreateQuestionCommand command)
         {
-            var question = GenerateQuestion(command.IssuedBy.Id, command.Title, command.Text, command.Tags);
+            var question = new Question
+            {
+                Id = Guid.NewGuid(),
+                Author = command.IssuedBy,
+                Tags = command.Tags?.ToList() ?? new List<Tag>(),
+                Text = command.Text,
+                Title = command.Title,
+                Votes = new List<Vote>(),
+                Timestamp = DateTime.Now,
+                Comments = new List<Comment>(),
+                Answers = new List<Answer>()
+            };
+
             Questions.Add(question);
             return CommandResponse.Success(question);
         }
@@ -288,7 +320,6 @@ namespace QA.DemoServices
             return CommandResponse.Failure($"Comment with id {command.CommentId} does not exist.");
         }
 
-
         private CommandResponse ExecuteAcceptAnswerCommand(AcceptAnswerCommand command)
         {
             foreach (var q in Questions)
@@ -302,25 +333,67 @@ namespace QA.DemoServices
             }
             return CommandResponse.Failure($"Answer {command.AnswerId} doesn't exist.");
         }
+        #endregion
 
+        #region IPostQueryService
         public Question GetQuestion(Guid questionId)
         {
             return Questions.SingleOrDefault(q => q.Id == questionId);
         }
 
-        public IEnumerable<Question> GetQuestions(Tag tag)
+        public QuestionListDto GetQuestions(string searchTerm)
         {
-            return Questions.Where(q => q.Tags.Any(t => t.Name == tag.Name));
+            var items = GetQuestionsInternal(searchTerm, null, null, out var count);
+            return new QuestionListDto
+            {
+                Questions = items,
+                FullCount = count,
+                Page = null
+            };
         }
 
-        public IEnumerable<Question> GetQuestions(string searchTerm)
+        public QuestionListDto GetQuestions(string searchTerm, int itemsPerPage, int page)
         {
-            return string.IsNullOrEmpty(searchTerm) ? Questions : Questions.Where(q => q.Text.Contains(searchTerm));
-        }
+            var items = GetQuestionsInternal(searchTerm, itemsPerPage, page, out var count);
+            return new QuestionListDto
+            {
+                Questions = items,
+                FullCount = count,
+                Page = page
+            };
+        }        
 
-        public IEnumerable<Tag> GetTags(string searchTerm)
+        public IEnumerable<Tag> GetTags()
         {
             return Tags;
+        }
+        #endregion
+
+        private IEnumerable<Question> GetQuestionsInternal(string searchTerm, int? itemsPerPage, int? page, out int count)
+        {
+            var search = string.Empty;
+            var tag = string.Empty;
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                if (searchTerm.StartsWith("[") && searchTerm.EndsWith("]")) tag = searchTerm.Trim('[', ']');
+                else search = searchTerm;
+            }
+
+            var questions = string.IsNullOrEmpty(search) ? 
+                Questions : 
+                Questions.Where(q => q.Text.Contains(search));
+            
+            questions = string.IsNullOrEmpty(tag) ? 
+                questions : 
+                questions.Where(q => q.Tags.Any(t => t.Name.Equals(tag, StringComparison.InvariantCultureIgnoreCase)));
+
+            count = questions.Count();
+
+            if (page.HasValue && itemsPerPage.HasValue)
+                questions = questions.Skip(page.Value * itemsPerPage.Value).Take(itemsPerPage.Value);
+
+            return questions.OrderByDescending(q => q.Timestamp).ToList();
         }
     }
 }

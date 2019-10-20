@@ -1,10 +1,12 @@
 ﻿@page "/"
 
+@using Microsoft.AspNetCore.WebUtilities
 @using QA.Web.Client.ViewModels
 @using System.Linq
 
 @inject HttpClient Http;
 @inject NavigationManager Navigation;
+@inject Microsoft.JSInterop.IJSRuntime JSRuntime;
 
 <h1>Q&A - Questions</h1>
 
@@ -14,6 +16,14 @@
 }
 else
 {
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Enter search text" @bind="ViewModel.SearchText" />
+        <div class="input-group-append">
+            <button class="btn btn-primary" @onclick="ViewModel.OnSearch">Search</button>
+        </div>
+    </div>
+
+
     <ul class="list-group">
         @foreach (var q in ViewModel.Questions)
         {
@@ -21,21 +31,88 @@ else
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title"><a href="/Question/@q.Id">@q.Title</a></h5>
-                        <h6 class="card-subtitle mb-2 text-muted">@string.Join(", ", q.Tags.Select(t => t.Name))</h6>
-                        <p class="card-text">@q.Text</p>                        
+                        <h6>
+                            @foreach (var tag in q.Tags)
+                            {
+                                <a href="/?search=[@tag.Name]"><span class="badge badge-primary">@tag.Name</span></a>
+                            }
+                        </h6>
+                        <p class="card-text">@q.Text</p>
+                    </div>
+                    <div class="card-footer">
+                        Asked by @q.AuthorName at @q.Timestamp
                     </div>
                 </div>
             </li>
         }
     </ul>
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(ViewModel.Page <= 0 ? "disabled" : "")"><a href="/?searchTerm=@ViewModel.SearchText&page=@(ViewModel.Page-1)" class="page-link">Previous</a></li>
+            @for (int i = 0; i < ViewModel.TotalPages ; i++)
+            {
+                <li class="page-item @(i == ViewModel.Page ? "active" : "")"><a href="/?searchTerm=@ViewModel.SearchText&page=@i" class="page-link">@(i + 1)</a></li>
+            }
+            <li class="page-item @(ViewModel.Page >= (ViewModel.TotalPages - 1) ? "disabled" : "")"><a href="/?searchTerm=@ViewModel.SearchText&page=@(ViewModel.Page+1)" class="page-link">Next</a></li>
+        </ul>
+    </nav>
 }
 
 @code{
+
     ListQuestionsViewModel ViewModel;
+
+    string ThisUri;
 
     protected override async Task OnInitializedAsync()
     {
         ViewModel = new ListQuestionsViewModel(Http, Navigation);
-        await ViewModel.LoadQuestionsAsync();
+        await UpdateQuestionsAsync();
+
+        ThisUri = Navigation.ToAbsoluteUri(Navigation.Uri).AbsolutePath;
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private async Task UpdateQuestionsAsync()
+    {
+        var (search, page) = GetQueryParameters();
+        ViewModel.SearchText = search;
+        await ViewModel.LoadQuestionsAsync(search, page);
+    }
+
+    private async void OnLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        try
+        {
+            if (Navigation.ToAbsoluteUri(e.Location).AbsolutePath == ThisUri)
+            {
+                await UpdateQuestionsAsync();
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex) { Console.WriteLine(ex.Message); }
+    }
+
+    private (string, int) GetQueryParameters()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        string search = string.Empty;
+        int page = 0;
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("search", out var searchValues))
+        {
+            search = searchValues.FirstOrDefault();
+        }
+
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("page", out var pageValues) && int.TryParse(pageValues.FirstOrDefault(), out var pageNum))
+        {
+            page = pageNum;
+        }
+        return (search, page);
+    }
+
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
     }
 }

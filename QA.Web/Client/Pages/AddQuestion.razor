@@ -1,0 +1,45 @@
+﻿@page "/Question/New"
+
+@using QA.Web.Client.ViewModels
+@using QA.Web.Client.Shared
+@using QA.Domain.Entities
+@using System.Linq
+@using Markdig
+@using Blazored.LocalStorage
+
+@inject HttpClient Http;
+@inject NavigationManager Navigation;
+@inject ILocalStorageService LocalStorage;
+
+@if (ViewModel != null && ViewModel.AllTags != null)
+{
+    <h3>New Question</h3>
+
+    <div class="form-group">
+        <label>Title</label>
+        <input type="text" class="form-control" placeholder="" @bind="ViewModel.Title" />
+        <TagsInput @ref="Tags" AllTags="@ViewModel.AllTags.Select(t => t.Name).ToList()" />
+    </div>
+
+    <MardownEditor OnTextChanged="@ViewModel.SetQuestionText" />
+
+    <button class="btn btn-primary float-right" @onclick="OnPostAsync">Post</button>
+}
+
+@code{
+
+    public NewQuestionViewModel ViewModel;
+    private TagsInput Tags;
+
+    internal async Task OnPostAsync()
+    {
+        ViewModel.TagsText = await Tags.GetTagsAsync();
+        await ViewModel.PostQuestion();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel = new NewQuestionViewModel(Http, Navigation, LocalStorage);
+        await ViewModel.InitializeAsync();
+    }
+}

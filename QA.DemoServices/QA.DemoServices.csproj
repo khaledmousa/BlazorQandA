@@ -5,6 +5,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Users.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Users.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="WaffleGenerator.Bogus" Version="4.0.2" />
   </ItemGroup>
 

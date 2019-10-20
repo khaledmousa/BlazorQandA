@@ -9,6 +9,7 @@ using QA.Domain.Services;
 using QA.Domain.Commands;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using QA.Domain.Dto;
 
 namespace QA.Web.Server.Controllers
 {
@@ -29,11 +30,10 @@ namespace QA.Web.Server.Controllers
 
         // GET: api/Post
         [HttpGet]        
-        public IEnumerable<Question> Get(string searchTerm, int page, int count)
+        public QuestionListDto Get(string searchTerm, int page, int count)
         {
-            var questions = _postQueryService.GetQuestions(searchTerm);
-            return questions.Skip(count * page).Take(count).ToArray();
-        }        
+            return _postQueryService.GetQuestions(searchTerm, count, page);
+        }       
 
         //GET: api/Post/id
         [HttpGet]
@@ -41,6 +41,16 @@ namespace QA.Web.Server.Controllers
         public Question Get(string questionId)
         {
             return _postQueryService.GetQuestion(Guid.Parse(questionId));
+        }
+
+        [HttpPost]        
+        public Question AddQuestion([FromBody]Question question)
+        {
+            var user = GetCurrentUser();
+
+            var result = _postCommandService.Execute(new CreateQuestionCommand(user, question.Title, question.Text, question.Tags));
+            if (result.IsSuccessful) return result.Entity as Question;
+            else return null;
         }
 
         [HttpPost]
