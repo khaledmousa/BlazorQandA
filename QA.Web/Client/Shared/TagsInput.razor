@@ -6,8 +6,17 @@
 
 @code{
 
+    [Parameter]
+    public IEnumerable<string> AllTags { get; set; }
+
+    internal async Task<IEnumerable<string>> GetTagsAsync()
+    {
+        var commaSeparatedTags = await JsRuntime.InvokeAsync<string>("getTags", "tags");
+        return commaSeparatedTags?.Split(',') ?? new string[] { };
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JsRuntime.InvokeVoidAsync("setAsTagsInput", "tags");
+        await JsRuntime.InvokeVoidAsync("setAsTagsInput", "tags", AllTags);
     }
 }

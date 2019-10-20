@@ -1,26 +1,20 @@
-window.setAsTagsInput = function (elementId) {
+window.setAsTagsInput = function (elementId, tagsList) {
     var tags = new Bloodhound({
-        datumTokenizer: function (tag) {
-            console.log(tag);
-            return Bloodhound.tokenizers.whitespace(tag.name);
-        },
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        prefetch: {
-            url: '/api/Tags/',
-            filter: function (tags) {
-                return $.map(tags, function (tag) {
-                    return { id: tag.id, name: tag.name };
-                });
-            }
-        }
+        datumTokenizer: Bloodhound.tokenizers.whitespace,
+        queryTokenizer: Bloodhound.tokenizers.whitespace,        
+        local: tagsList
     });
-    tags.initialize();
 
-    $('#' + elementId).tagsinput({                
+    //tags.initialize();
+
+    $('#' + elementId).tagsinput({              
         typeaheadjs: {
-            name: 'tags',
-            display: 'name',                        
-            source: tags
+            name: 'tags',            
+            source: tags            
         }
     });
+}
+
+window.getTags = function (elementId) {
+    return $('#' + elementId).val();
 }
