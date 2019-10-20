@@ -10,7 +10,7 @@ namespace QA.Domain.Services
         Question GetQuestion(Guid questionId);
         IEnumerable<Question> GetQuestions(Tag tag);
         IEnumerable<Question> GetQuestions(string searchTerm);
-        IEnumerable<Tag> GetTags(string searchTerm);
+        IEnumerable<Tag> GetTags();
 
     }
 }

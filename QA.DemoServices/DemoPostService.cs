@@ -71,13 +71,31 @@ namespace QA.DemoServices
         {
             Tags = new List<Tag>
             {
-                new Tag { Id = Guid.NewGuid(), Name = "C#" },
                 new Tag { Id = Guid.NewGuid(), Name = "ASP.NET" },
-                new Tag { Id = Guid.NewGuid(), Name = "WPF" },
-                new Tag { Id = Guid.NewGuid(), Name = "SQL" },
+                new Tag { Id = Guid.NewGuid(), Name = "Ajax" },
+                new Tag { Id = Guid.NewGuid(), Name = "Blazor" },
+                new Tag { Id = Guid.NewGuid(), Name = "Busines Intelligence" },
+                new Tag { Id = Guid.NewGuid(), Name = "C#" },
+                new Tag { Id = Guid.NewGuid(), Name = "COM" },
+                new Tag { Id = Guid.NewGuid(), Name = "Continuous Integration" },
+                new Tag { Id = Guid.NewGuid(), Name = "Cross Platform" },
+                new Tag { Id = Guid.NewGuid(), Name = "Django" },
+                new Tag { Id = Guid.NewGuid(), Name = "Entity Framework" },
+                new Tag { Id = Guid.NewGuid(), Name = "F#" },
+                new Tag { Id = Guid.NewGuid(), Name = "FORTRAN" },
+                new Tag { Id = Guid.NewGuid(), Name = "Golang" },
+                new Tag { Id = Guid.NewGuid(), Name = "Hadoop" },                
+                new Tag { Id = Guid.NewGuid(), Name = "Java" },
+                new Tag { Id = Guid.NewGuid(), Name = "jQuery" },
+                new Tag { Id = Guid.NewGuid(), Name = "Javascript" },
+                new Tag { Id = Guid.NewGuid(), Name = "Kotlin" },
+                new Tag { Id = Guid.NewGuid(), Name = ".Net" },
+                new Tag { Id = Guid.NewGuid(), Name = "OOP" },
+                new Tag { Id = Guid.NewGuid(), Name = "Pascal" },
                 new Tag { Id = Guid.NewGuid(), Name = "Php" },
                 new Tag { Id = Guid.NewGuid(), Name = "Python" },
-                new Tag { Id = Guid.NewGuid(), Name = "Java" },
+                new Tag { Id = Guid.NewGuid(), Name = "SQL" },                                
+                new Tag { Id = Guid.NewGuid(), Name = "WPF" },
             };
         }
 
@@ -330,7 +348,7 @@ namespace QA.DemoServices
             return (string.IsNullOrEmpty(searchTerm) ? Questions : Questions.Where(q => q.Text.Contains(searchTerm))).OrderByDescending(q => q.Timestamp);
         }
 
-        public IEnumerable<Tag> GetTags(string searchTerm)
+        public IEnumerable<Tag> GetTags()
         {
             return Tags;
         }

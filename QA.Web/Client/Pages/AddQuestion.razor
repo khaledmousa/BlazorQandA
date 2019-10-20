@@ -7,8 +7,6 @@
 
 @inject HttpClient Http;
 @inject NavigationManager Navigation;
-@inject IJSRuntime JsRuntime;
-
 
 @if (ViewModel != null)
 {
@@ -17,9 +15,7 @@
     <div class="form-group">
         <label>Tile</label>
         <input type="text" class="form-control" placeholder="" @bind="ViewModel.Title" />
-
-        <label>Tags</label>
-        <input type="text" id="tags" value="One,Two,Three" />
+        <TagsInput />
     </div>
 
     <MardownEditor OnTextChanged="@ViewModel.SetQuestionText" />
@@ -35,9 +31,4 @@
     {
         ViewModel = new NewQuestionViewModel(Http, Navigation);        
     }    
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await JsRuntime.InvokeVoidAsync("setAsTagsInput", "tags");
-    }
 }

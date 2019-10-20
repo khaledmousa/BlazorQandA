@@ -1,0 +1,13 @@
+﻿@inject IJSRuntime JsRuntime;
+<!-- Depends on /scripts/tags.js, imported in index.html -->
+
+<label>Tags</label>
+<input type="text" id="tags" />
+
+@code{
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JsRuntime.InvokeVoidAsync("setAsTagsInput", "tags");
+    }
+}
