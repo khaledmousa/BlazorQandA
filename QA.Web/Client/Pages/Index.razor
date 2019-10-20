@@ -1,5 +1,6 @@
 ﻿@page "/"
 
+@using Microsoft.AspNetCore.WebUtilities
 @using QA.Web.Client.ViewModels
 @using System.Linq
 
@@ -21,7 +22,12 @@ else
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title"><a href="/Question/@q.Id">@q.Title</a></h5>
-                        <h6 class="card-subtitle mb-2 text-muted">@string.Join(", ", q.Tags.Select(t => t.Name))</h6>
+                        <h6>
+                            @foreach (var tag in q.Tags)
+                            {
+                                <a href="/?search=[@tag.Name]"><span class="badge badge-primary">@tag.Name</span></a>
+                            }
+                        </h6>
                         <p class="card-text">@q.Text</p>
                     </div>
                     <div class="card-footer">
@@ -34,11 +40,55 @@ else
 }
 
 @code{
+
     ListQuestionsViewModel ViewModel;
 
+    string ThisUri;
+
     protected override async Task OnInitializedAsync()
-    {
+    {        
         ViewModel = new ListQuestionsViewModel(Http, Navigation);
-        await ViewModel.LoadQuestionsAsync();
+
+        var (search, page) = GetQueryParameters();
+        await ViewModel.LoadQuestionsAsync(search, page);
+        
+        ThisUri = Navigation.ToAbsoluteUri(Navigation.Uri).AbsolutePath;
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
+
+    private async void OnLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        try
+        {            
+            if (Navigation.ToAbsoluteUri(e.Location).AbsolutePath == ThisUri)
+            {                
+                var (search, page) = GetQueryParameters();              
+                await ViewModel.LoadQuestionsAsync(search, page);
+                StateHasChanged();                
+            }
+        }
+        catch (Exception ex) { Console.WriteLine(ex.Message); }
+    }
+
+    private (string, int) GetQueryParameters()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        string search = string.Empty;
+        int page = 0;
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("search", out var searchValues))
+        {
+            search = searchValues.FirstOrDefault();
+        }
+
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("page", out var pageValues) && int.TryParse(pageValues.FirstOrDefault(), out var pageNum))
+        {
+            page = pageNum;
+        }
+        return (search, page);
     }
 }

@@ -57,7 +57,7 @@ namespace QA.DemoServices
             {
                 Id = Guid.NewGuid(),
                 Author = userId.HasValue ? Users.Single(u => u.Id == userId.Value) : Users[Random.Next(0, Users.Count - 1)],
-                Tags = tags == null ? Tags.OrderBy(t => Random.Next(0, 100)).Take(Random.Next(1, Tags.Count - 1)).ToList() : tags.ToList(),
+                Tags = tags == null ? Tags.OrderBy(t => Random.Next(0, 100)).Take(Random.Next(1, 4)).OrderBy(t => t.Name).ToList() : tags.ToList(),
                 Text = string.IsNullOrEmpty(question) ? WaffleEngine.Text(Random.Next(1, 3), false) : question,
                 Title = string.IsNullOrEmpty(title) ? WaffleEngine.Title() : title,
                 Votes = VoteGenerator.GenerateForever().Take(Random.Next(0, 50)).ToList(),
@@ -101,6 +101,7 @@ namespace QA.DemoServices
 
         #endregion
 
+        #region IPostCommandService
         public CommandResponse Execute(CommandBase command)
         {
             switch (command)
@@ -318,7 +319,6 @@ namespace QA.DemoServices
             return CommandResponse.Failure($"Comment with id {command.CommentId} does not exist.");
         }
 
-
         private CommandResponse ExecuteAcceptAnswerCommand(AcceptAnswerCommand command)
         {
             foreach (var q in Questions)
@@ -332,25 +332,58 @@ namespace QA.DemoServices
             }
             return CommandResponse.Failure($"Answer {command.AnswerId} doesn't exist.");
         }
+        #endregion
 
+        #region IPostQueryService
         public Question GetQuestion(Guid questionId)
         {
             return Questions.SingleOrDefault(q => q.Id == questionId);
         }
 
-        public IEnumerable<Question> GetQuestions(Tag tag)
-        {
-            return Questions.Where(q => q.Tags.Any(t => t.Name == tag.Name)).OrderByDescending(q => q.Timestamp);
-        }
-
         public IEnumerable<Question> GetQuestions(string searchTerm)
         {
-            return (string.IsNullOrEmpty(searchTerm) ? Questions : Questions.Where(q => q.Text.Contains(searchTerm))).OrderByDescending(q => q.Timestamp);
+            return GetQuestionsInternal(searchTerm, null, null);
+        }
+
+        public IEnumerable<Question> GetQuestions(string searchTerm, int itemsPerPage, int page)
+        {
+            return GetQuestionsInternal(searchTerm, itemsPerPage, page);
+        }
+        
+        public int GetQuestionCount(string searchTerm)
+        {
+            return GetQuestionsInternal(searchTerm, null, null).Count();
         }
 
         public IEnumerable<Tag> GetTags()
         {
             return Tags;
+        }
+        #endregion
+
+        private IEnumerable<Question> GetQuestionsInternal(string searchTerm, int? itemsPerPage, int? page)
+        {
+            var search = string.Empty;
+            var tag = string.Empty;
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                if (searchTerm.StartsWith("[") && searchTerm.EndsWith("]")) tag = searchTerm.Trim('[', ']');
+                else search = searchTerm;
+            }
+
+            var questions = string.IsNullOrEmpty(search) ? 
+                Questions : 
+                Questions.Where(q => q.Text.Contains(search));
+            
+            questions = string.IsNullOrEmpty(tag) ? 
+                questions : 
+                questions.Where(q => q.Tags.Any(t => t.Name.Equals(tag, StringComparison.InvariantCultureIgnoreCase)));
+
+            if (page.HasValue && itemsPerPage.HasValue)
+                questions = questions.Skip(page.Value * itemsPerPage.Value).Take(itemsPerPage.Value);
+
+            return questions.OrderByDescending(q => q.Timestamp).ToList();
         }
     }
 }

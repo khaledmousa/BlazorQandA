@@ -8,8 +8,9 @@ namespace QA.Domain.Services
     public interface IPostQueryService
     {
         Question GetQuestion(Guid questionId);
-        IEnumerable<Question> GetQuestions(Tag tag);
         IEnumerable<Question> GetQuestions(string searchTerm);
+        IEnumerable<Question> GetQuestions(string searchTerm, int itemsPerPage, int page);
+        int GetQuestionCount(string searchTerm);        
         IEnumerable<Tag> GetTags();
 
     }

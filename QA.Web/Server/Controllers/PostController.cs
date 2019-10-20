@@ -31,9 +31,15 @@ namespace QA.Web.Server.Controllers
         [HttpGet]        
         public IEnumerable<Question> Get(string searchTerm, int page, int count)
         {
-            var questions = _postQueryService.GetQuestions(searchTerm);
-            return questions.Skip(count * page).Take(count).ToArray();
-        }        
+            return _postQueryService.GetQuestions(searchTerm, count, page);
+        }
+        
+        [HttpGet]
+        [Route("count")]
+        public int GetCount(string searchTerm)
+        {
+            return _postQueryService.GetQuestionCount(searchTerm);
+        }
 
         //GET: api/Post/id
         [HttpGet]

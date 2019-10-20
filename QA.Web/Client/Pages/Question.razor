@@ -18,7 +18,12 @@ else
             @ViewModel.Question.Title
         </div>
         <div class="card-body">
-            <h6 class="card-subtitle mb-2 text-muted">@string.Join(", ", ViewModel.Question.Tags.Select(t => t.Name))</h6>
+            <h6>
+                @foreach (var tag in ViewModel.Question.Tags)
+                {
+                    <span class="badge badge-primary">@tag.Name</span>
+                }
+            </h6>            
             <h5>
                 <button @onclick="ViewModel.VoteUp" class="btn"><i class="oi oi-plus"></i></button>
                 @ViewModel.Question.Votes.Sum(v => v.Direction == Direction.Down ? -1 : 1)

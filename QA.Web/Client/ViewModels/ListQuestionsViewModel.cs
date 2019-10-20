@@ -23,13 +23,11 @@ namespace QA.Web.Client.ViewModels
             Questions = null;
         }
 
-        public async Task LoadQuestionsAsync()
-        {
-            var questions = await _httpClient.GetJsonAsync<Question[]>("api/Post?searchTerm=&page=0&count=10");
-            Questions = questions.Select(q => new QuestionBrief(q)).ToArray();
+        public async Task LoadQuestionsAsync(string searchTerm, int page)
+        {            
+            var questions = await _httpClient.GetJsonAsync<Question[]>($"api/Post?searchTerm={searchTerm}&page={page}&count=10");            
+            Questions = questions.Select(q => new QuestionBrief(q)).ToArray();            
         }
-
-
     }
 
     public class QuestionBrief
