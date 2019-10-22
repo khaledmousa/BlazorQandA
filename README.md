@@ -12,5 +12,6 @@ A sample Q&A application built with Blazor WebAssembly
 
 ## Notes
 
+* Users are generated from a .json file, to login user: `demo@demo.com` with password `demo`
 * The authentication implementation is based on [Chris Sainty's post on Blazor client-side authentication](https://chrissainty.com/securing-your-blazor-apps-authentication-with-clientside-blazor-using-webapi-aspnet-core-identity/)
-
+* This project is intended to experiment with Blazor WebAssembly, and is obviously not complete or usable. Things like server-side authentication are very loose and the functionality is not complete.
