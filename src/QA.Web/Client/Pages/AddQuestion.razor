@@ -13,17 +13,24 @@
 
 @if (ViewModel != null && ViewModel.AllTags != null)
 {
-    <h3>New Question</h3>
+    <AuthorizeView>
+        <Authorized>
+            <h3>New Question</h3>
 
-    <div class="form-group">
-        <label>Title</label>
-        <input type="text" class="form-control" placeholder="" @bind="ViewModel.Title" />
-        <TagsInput @ref="Tags" AllTags="@ViewModel.AllTags.Select(t => t.Name).ToList()" />
-    </div>
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" class="form-control" placeholder="" @bind="ViewModel.Title" />
+                <TagsInput @ref="Tags" AllTags="@ViewModel.AllTags.Select(t => t.Name).ToList()" />
+            </div>
 
-    <MardownEditor OnTextChanged="@ViewModel.SetQuestionText" />
+            <MardownEditor OnTextChanged="@ViewModel.SetQuestionText" />
 
-    <button class="btn btn-primary float-right" @onclick="OnPostAsync">Post</button>
+            <button class="btn btn-primary float-right" @onclick="OnPostAsync">Post</button>
+        </Authorized>
+        <NotAuthorized>
+            You need to log in before posting questions
+        </NotAuthorized>
+    </AuthorizeView>
 }
 
 @code{

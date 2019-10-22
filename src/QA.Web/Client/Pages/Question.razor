@@ -23,7 +23,7 @@ else
                 {
                     <span class="badge badge-primary">@tag.Name</span>
                 }
-            </h6>            
+            </h6>
             <h5>
                 <button @onclick="ViewModel.VoteUp" class="btn"><i class="oi oi-plus"></i></button>
                 @ViewModel.Question.Votes.Sum(v => v.Direction == Direction.Down ? -1 : 1)
@@ -38,12 +38,20 @@ else
                         <li class="list-group-item small">@c.Text</li>
                     }
                 </ul>
-                <textarea @bind="ViewModel.Question.NewCommentText"></textarea>
-                <button type="button" class="btn btn-light" @onclick="ViewModel.Question.AddComment">Comment</button>
+                <AuthorizeView>
+                    <Authorized>
+                        <textarea @bind="ViewModel.Question.NewCommentText"></textarea>
+                        <button type="button" class="btn btn-light" @onclick="ViewModel.Question.AddComment">Comment</button>
+                    </Authorized>
+                </AuthorizeView>
             </div>
         </div>
     </div>
-    <a href="/Question/@ViewModel?.Question?.Id/Answer" class="btn btn-primary float-right">Post Answer</a>
+    <AuthorizeView>
+        <Authorized>
+            <a href="/Question/@ViewModel?.Question?.Id/Answer" class="btn btn-primary float-right">Post Answer</a>
+        </Authorized>
+    </AuthorizeView>    
     <h2>Answers</h2>
     <ul class="list-group">
         @foreach (var a in ViewModel.Question.Answers ?? new List<AnswerViewModel>())
