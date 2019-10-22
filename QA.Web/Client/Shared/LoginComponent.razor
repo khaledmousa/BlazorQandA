@@ -1,11 +1,9 @@
-﻿@using Microsoft.AspNetCore.Components.Authorization
-
-    <AuthorizeView>
-        <Authorized>
-            Hello, @context.User.Identity.Name
-            <a href="Logout" class="ml-md-auto">Log out</a>
-        </Authorized>
-        <NotAuthorized>            
-            <a href="Login" class="ml-md-auto">Log in</a>
-        </NotAuthorized>
-    </AuthorizeView>
+﻿<AuthorizeView>
+    <Authorized>
+        Hello, @context.User.Identity.Name
+        <a href="Logout" class="ml-md-auto">Log out</a>
+    </Authorized>
+    <NotAuthorized>
+        <a href="Login" class="ml-md-auto">Log in</a>
+    </NotAuthorized>
+</AuthorizeView>
